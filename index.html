@@ -3,165 +3,148 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="author" content="ZXing for JS" />
-
-    <title>Decoding from camera stream</title>
-
-    <link
-      rel="stylesheet"
-      rel="preload"
-      as="style"
-      onload="this.rel='stylesheet';this.onload=null"
-      href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic"
-    />
-    <link
-      rel="stylesheet"
-      rel="preload"
-      as="style"
-      onload="this.rel='stylesheet';this.onload=null"
-      href="https://unpkg.com/normalize.css@8.0.0/normalize.css"
-    />
-    <link
-      rel="stylesheet"
-      rel="preload"
-      as="style"
-      onload="this.rel='stylesheet';this.onload=null"
-      href="https://unpkg.com/milligram@1.3.0/dist/milligram.min.css"
-    />
+    <title>Scan QR Code To Pay</title>
+    <style>
+      body {
+        font-family: 'Roboto', sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f0f5ff; /* Very light bluish tone background */
+      }
+      .container {
+        max-width: 90%;
+        margin: 0 auto;
+        padding: 2em;
+        text-align: center;
+      }
+      .claymorphic {
+        background-color: #f5f5f5; /* Light gray claymorphic background color */
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 6px 6px rgba(0, 0, 0, 0.15);
+        transition: transform 0.3s ease-in-out;
+        margin-bottom: 20px;
+      }
+      .claymorphic:hover {
+        transform: translateY(-5px);
+      }
+      {
+        color: #333;
+      }
+      .buttons {
+        margin-bottom: 1em;
+      }
+      button {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin: 0 5px;
+      }
+      button:hover {
+        background-color: #45a049;
+      }
+      #video {
+        width: 100%;
+        max-width: 400px;
+        height: auto;
+        border: 1px solid gray;
+        margin: 0 auto;
+        display: block;
+      }
+      .label {
+        font-size: 1.2em;
+        color: #333;
+        margin-bottom: 5px;
+      }
+      .result {
+        font-size: 1.2em;
+        color: #333;
+        margin-bottom: 10px;
+      }
+      .decoding-details {
+        color: #666;
+        font-style: italic;
+        margin-bottom: 20px;
+      }
+      .payButton {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        text-decoration: none;
+        transition: background-color 0.3s ease-in-out;
+        display: inline-block;
+      }
+      .payButton:hover {
+        background-color: #0056b3;
+      }
+      .link {
+        color: #007bff;
+        text-decoration: none;
+        margin-top: 10px;
+        display: block;
+      }
+    </style>
   </head>
-
   <body>
-    <main class="wrapper" style="padding-top: 2em">
-      <section class="container" id="demo-content">
-        <h1 class="title">Scan QR Code To Pay</h1>
-
-        <p>
-          This example shows how to scan a QR code with ZXing javascript library
-          from the device video camera. If more than one video input devices are
-          available (for example front and back camera) the example shows how to
-          read them and use a select to change the input device.
-        </p>
-
-        <div style="gap: calc(20)">
-          <a class="button" id="startButton">Scan UPI QR</a>
-          <a class="button" id="resetButton">Reset</a>
-        </div>
-
-        <div>
-          <video
-            id="video"
-            width="300"
-            height="200"
-            style="border: 1px solid gray"
-          ></video>
-        </div>
-
-        <div id="sourceSelectPanel" style="display: none">
-          <label for="sourceSelect">Change video source:</label>
-          <select id="sourceSelect" style="max-width: 400px"></select>
-        </div>
-
-        <div style="display: table">
-          <label for="decoding-style"> Decoding Style:</label>
-          <select id="decoding-style" size="1">
-            <option value="once">Decode once</option>
-            <option value="continuously">Decode continuously</option>
-          </select>
-        </div>
-
-        <label>Result:</label>
-        <pre><code id="result"></code></pre>
-
-        <div>
-          <a class="button" id="pay" href="upi://pay?pa=Shshs@oksbi&pn=Whis"
-            >Pay Now</a
-          >
-        </div>
-
-        <p>
-          See the
-          <a
-            href="https://github.com/zxing-js/library/tree/master/docs/examples/qr-camera/"
-            >source code</a
-          >
-          for this example.
-        </p>
-      </section>
-
-      <footer class="footer">
-        <section class="container">
-          <p>
-            ZXing TypeScript Demo. Licensed under the
-            <a
-              target="_blank"
-              href="https://github.com/zxing-js/library#license"
-              title="MIT"
-              >MIT</a
-            >.
-          </p>
-        </section>
-      </footer>
+    <main class="container">
+      <h1 class="title">Scan QR Code To Pay</h1>
+      <div class="buttons claymorphic">
+        <button id="startButton">Start Scan</button>
+        <button id="resetButton">Reset</button>
+      </div>
+      <video id="video" width="300" height="200"></video>
+      <div id="resultContainer" class="claymorphic">
+        <label class="label">Result:</label>
+        <p id="result" class="result"></p>
+        <p class="decoding-details">Decoding.</p>
+        <a
+          id="pay"
+          href="upi://pay?pa=Shshs@oksbi&pn=Whis"
+          class="payButton claymorphic"
+          >Pay Now</a
+        >
+      </div>
+      <a href="../../index.html" class="link">HOME 🏡</a>
     </main>
-
-    <script
-      type="text/javascript"
-      src="https://unpkg.com/@zxing/library@latest"
-    ></script>
-    <script type="text/javascript">
-      <!-- function decodeOnce(codeReader, selectedDeviceId) { -->
-      <!--   codeReader.decodeFromInputVideoDevice(selectedDeviceId, 'video').then((result) => { -->
-      <!--     console.log(result) -->
-      <!--     document.getElementById('result').textContent = result.text -->
-      <!--   }).catch((err) => { -->
-      <!--     console.error(err) -->
-      <!--     document.getElementById('result').textContent = err -->
-      <!--   }) -->
-      <!-- } -->
-
+    <script src="https://unpkg.com/@zxing/library@latest"></script>
+    <script>
       function decodeContinuously(codeReader, selectedDeviceId) {
         codeReader.decodeFromInputVideoDeviceContinuously(
           selectedDeviceId,
           "video",
           (result, err) => {
             if (result) {
-              // properly decoded qr code
               console.log("Found QR code!", result);
               document.getElementById("result").textContent = result.text;
 
               result = result.toString();
-
               const kumar = result;
 
               if (kumar.startsWith("upi")) {
                 document.getElementById("pay").href = `${kumar}`;
-                alert("click pay now to pay")
+                alert("Click Pay Now to pay.");
               }
             }
 
             if (err) {
-              // As long as this error belongs into one of the following categories
-              // the code reader is going to continue as excepted. Any other error
-              // will stop the decoding loop.
-              //
-              // Excepted Exceptions:
-              //
-              //  - NotFoundException
-              //  - ChecksumException
-              //  - FormatException
-
               if (err instanceof ZXing.NotFoundException) {
                 console.log("No QR code found.");
               }
 
               if (err instanceof ZXing.ChecksumException) {
                 console.log(
-                  "A code was found, but it's read value was not valid.",
+                  "A code was found, but its read value was not valid.",
                 );
               }
 
               if (err instanceof ZXing.FormatException) {
                 console.log(
-                  "A code was found, but it was in a invalid format.",
+                  "A code was found, but it was in an invalid format.",
                 );
               }
             }
@@ -170,17 +153,18 @@
       }
 
       window.addEventListener("load", function () {
-        
-        let selectedDeviceId;
-        const codeReader = new ZXing.BrowserQRCodeReader();
-        console.log("ZXing code reader initialized");
+        setTimeout(function () {
+          let selectedDeviceId;
+          const codeReader = new ZXing.BrowserQRCodeReader();
+          console.log("ZXing code reader initialized");
 
-        codeReader
-          .getVideoInputDevices()
-          .then((videoInputDevices) => {
-            const sourceSelect = document.getElementById("sourceSelect");
-            selectedDeviceId = videoInputDevices[0].deviceId;
+          codeReader.getVideoInputDevices().then((videoInputDevices) => {
+            selectedDeviceId = videoInputDevices[1].deviceId;
             if (videoInputDevices.length >= 1) {
+              const sourceSelect = document.createElement("select");
+              sourceSelect.id = "sourceSelect";
+              sourceSelect.style.maxWidth = "400px";
+
               videoInputDevices.forEach((element) => {
                 const sourceOption = document.createElement("option");
                 sourceOption.text = element.label;
@@ -192,42 +176,39 @@
                 selectedDeviceId = sourceSelect.value;
               };
 
-              const sourceSelectPanel =
-                document.getElementById("sourceSelectPanel");
+              const sourceSelectPanel = document.createElement("div");
+              sourceSelectPanel.id = "sourceSelectPanel";
               sourceSelectPanel.style.display = "block";
+              sourceSelectPanel.appendChild(sourceSelect);
+
+              document.body.insertBefore(
+                sourceSelectPanel,
+                document.getElementById("resultContainer"),
+              );
             }
 
-            var payLink = document.getElementById("pay");
-
-            document
-              .getElementById("startButton")
-              .addEventListener("click", () => {
-                const decodingStyle =
-                  document.getElementById("decoding-style").value;
-
-                if (decodingStyle == "oncer") {
-                  decodeOnce(codeReader, selectedDeviceId);
-                } else {
-                  decodeContinuously(codeReader, selectedDeviceId);
-                }
+            document.getElementById("startButton").addEventListener(
+              "click",
+              () => {
                 decodeContinuously(codeReader, selectedDeviceId);
-
                 console.log(
                   `Started decode from camera with id ${selectedDeviceId}`,
                 );
-              });
-
-            document
-              .getElementById("resetButton")
-              .addEventListener("click", () => {
-                codeReader.reset();
-                document.getElementById("result").textContent = "";
-                console.log("Reset.");
-              });
-          })
-          .catch((err) => {
-            console.error(err);
+              },
+              1000,
+            );
           });
+
+          document
+            .getElementById("resetButton")
+            .addEventListener("click", () => {
+              codeReader.reset();
+              document.getElementById("result").textContent = "";
+              console.log("Reset.");
+            });
+        }).catch((err) => {
+          console.error(err);
+        });
       });
     </script>
   </body>
