@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="ZXing for JS" />
 
-    <title>ZXing TypeScript | Decoding from camera stream</title>
+    <title>Decoding from camera stream</title>
 
     <link
       rel="stylesheet"
@@ -34,12 +34,6 @@
     <main class="wrapper" style="padding-top: 2em">
       <section class="container" id="demo-content">
         <h1 class="title">Scan QR Code To Pay</h1>
-
-        <p>
-          <a class="button-small button-outline" href="../../index.html"
-            >HOME 🏡</a
-          >
-        </p>
 
         <p>
           This example shows how to scan a QR code with ZXing javascript library
@@ -94,20 +88,6 @@
         </p>
       </section>
 
-      <div class="form-popup" id="myForm">
-        <form action={decodeContinuously()} class="form-container">
-          <h1>Login</h1>
-
-
-          <label for="amount"><b>Enter Amount:</b></label>
-          <input type="text" placeholder="Enter Amount" name="amount" required />
-
-          <label for="reason"><b>Say Reason:</b></label>
-          <input type="text" placeholder="Enter Reason" name="reason" required />
-
-          <button type="submit" href="kumar"><a href="" id="payNow" style="color: white;">Pay Now</a></button>
-        </form> </div>
-
       <footer class="footer">
         <section class="container">
           <p>
@@ -154,7 +134,7 @@
 
               if (kumar.startsWith("upi")) {
                 document.getElementById("pay").href = `${kumar}`;
-                alert("click pay now to pay");
+                alert("click pay now to pay")
               }
             }
 
@@ -190,14 +170,16 @@
       }
 
       window.addEventListener("load", function () {
-        setTimeout(function () {
-          let selectedDeviceId;
-          const codeReader = new ZXing.BrowserQRCodeReader();
-          console.log("ZXing code reader initialized");
+        
+        let selectedDeviceId;
+        const codeReader = new ZXing.BrowserQRCodeReader();
+        console.log("ZXing code reader initialized");
 
-          codeReader.getVideoInputDevices().then((videoInputDevices) => {
+        codeReader
+          .getVideoInputDevices()
+          .then((videoInputDevices) => {
             const sourceSelect = document.getElementById("sourceSelect");
-            selectedDeviceId = videoInputDevices[1].deviceId;
+            selectedDeviceId = videoInputDevices[0].deviceId;
             if (videoInputDevices.length >= 1) {
               videoInputDevices.forEach((element) => {
                 const sourceOption = document.createElement("option");
@@ -217,9 +199,9 @@
 
             var payLink = document.getElementById("pay");
 
-            document.getElementById("startButton").addEventListener(
-              "click",
-              () => {
+            document
+              .getElementById("startButton")
+              .addEventListener("click", () => {
                 const decodingStyle =
                   document.getElementById("decoding-style").value;
 
@@ -233,21 +215,19 @@
                 console.log(
                   `Started decode from camera with id ${selectedDeviceId}`,
                 );
-              },
-              1000,
-            );
-          });
+              });
 
-          document
-            .getElementById("resetButton")
-            .addEventListener("click", () => {
-              codeReader.reset();
-              document.getElementById("result").textContent = "";
-              console.log("Reset.");
-            });
-        }).catch((err) => {
-          console.error(err);
-        });
+            document
+              .getElementById("resetButton")
+              .addEventListener("click", () => {
+                codeReader.reset();
+                document.getElementById("result").textContent = "";
+                console.log("Reset.");
+              });
+          })
+          .catch((err) => {
+            console.error(err);
+          });
       });
     </script>
   </body>
