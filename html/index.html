@@ -42,10 +42,11 @@
         </p>
 
         <p>
-          This example shows how to scan a QR code with ZXing javascript library
-          from the device video camera. If more than one video input devices are
-          available (for example front and back camera) the example shows how to
-          read them and use a select to change the input device.
+          Our upcoming app feature simplifies UPI payments! Scan any QR code,
+          and our app will securely process it. You'll then get a modifiable UPI
+          link to review details and adjust the amount (if needed) before
+          directly initiating the payment through your preferred UPI app. This
+          POC showcases a smoother and faster way to pay with UPI.
         </p>
 
         <div style="gap: calc(20)">
@@ -86,10 +87,7 @@
 
         <p>
           See the
-          <a
-            href="https://github.com/zxing-js/library/tree/master/docs/examples/qr-camera/"
-            >source code</a
-          >
+          <a href="https://github.com/bupd/xpendstracker/">source code</a>
           for this example.
         </p>
       </section>
@@ -97,10 +95,10 @@
       <footer class="footer">
         <section class="container">
           <p>
-            ZXing TypeScript Demo. Licensed under the
+            This POC Demo. Licensed under the
             <a
               target="_blank"
-              href="https://github.com/zxing-js/library#license"
+              href="https://github.com/bupd/xpendstracker#license"
               title="MIT"
               >MIT</a
             >.
@@ -140,7 +138,7 @@
 
               if (kumar.startsWith("upi")) {
                 document.getElementById("pay").href = `${kumar}`;
-                alert("click pay now to pay")
+                alert("click pay now to pay");
               }
             }
 
@@ -176,7 +174,6 @@
       }
 
       window.addEventListener("load", function () {
-        
         let selectedDeviceId;
         const codeReader = new ZXing.BrowserQRCodeReader();
         console.log("ZXing code reader initialized");
